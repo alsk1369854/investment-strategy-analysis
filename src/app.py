@@ -1,9 +1,10 @@
-# from typing import
+from typing import List
 
 import pandas as pd
 
 # from pandas import DataFrame, read_excel, read_csv, to_datetime
-from utils import InvestmentUtil, MaxDrawdownResult
+from .modules import InvestmentStrategyAnalysis, MaxDrawdownResult
+from .gui import MainWindow
 
 
 def get_data_frame(file_path: str) -> pd.DataFrame:
@@ -60,17 +61,14 @@ def init(data_frame: pd.DataFrame) -> pd.DataFrame:
     return new_data_frame
 
 
-if __name__ == "__main__":
-    data_frame: pd.DataFrame = get_data_frame("data/Nasdaq_history_data.xlsx")
-    new_data_frame: pd.DataFrame = init(data_frame)
+from .gui import MainWindow
+from customtkinter import CTk
 
-    date_line = list(new_data_frame["Date"])
-    capital_line = list(new_data_frame["策略一"])
 
-    # annual = InvestmentUtil.annual_return(date_line, capital_line)
-    # print(annual)
+class App:
+    def __init__(self):
+        pass
 
-    # max_drawdown_result: MaxDrawdownResult = InvestmentUtil.max_drawdown(
-    #     date_line, capital_line
-    # )
-    # print(max_drawdown_result.__dict__)
+    def start(self):
+        main_window: MainWindow = MainWindow()
+        main_window.mainloop()
