@@ -3,19 +3,8 @@ from typing import List
 import pandas as pd
 
 # from pandas import DataFrame, read_excel, read_csv, to_datetime
-from .modules import InvestmentStrategyAnalysis, MaxDrawdownResult
-from .gui import MainWindow
-
-
-def get_data_frame(file_path: str) -> pd.DataFrame:
-    file_extension: str = file_path.split(".")[-1]
-    match file_extension:
-        case "xlsx" | "xls":
-            return pd.read_excel(file_path)
-        case "csv":
-            return pd.read_csv(file_path)
-        case _:
-            raise RuntimeError("file can not parse to data frame")
+from .modules import InvestmentStrategy, MaxDrawdownResult
+from .gui import AppWindow
 
 
 def init(data_frame: pd.DataFrame) -> pd.DataFrame:
@@ -61,14 +50,12 @@ def init(data_frame: pd.DataFrame) -> pd.DataFrame:
     return new_data_frame
 
 
-from .gui import MainWindow
-from customtkinter import CTk
+from .gui import AppWindow
 
 
-class App:
+class Main:
     def __init__(self):
-        pass
+        self.app_window: AppWindow = AppWindow(size=(900, 350))
 
     def start(self):
-        main_window: MainWindow = MainWindow()
-        main_window.mainloop()
+        self.app_window.mainloop()

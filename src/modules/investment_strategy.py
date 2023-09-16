@@ -1,7 +1,8 @@
 from typing import List, Final
 from enum import StrEnum, Enum
-from pandas import Timestamp, DataFrame, period_range
+from pandas import Timestamp, DataFrame, period_range, Series, to_datetime
 from math import sqrt
+from datetime import datetime
 
 
 class ColumnEnum(StrEnum):
@@ -11,23 +12,51 @@ class ColumnEnum(StrEnum):
 
 
 class MaxDrawdownResult:
-    def __init__(self, max_drawdown: float, start_date: Timestamp, end_date: Timestamp):
+    def __init__(
+        self, max_drawdown: float, start_timestamp: Timestamp, end_timestamp: Timestamp
+    ):
         self.max_drawdown: Final[float] = max_drawdown
-        self.start_date: Final[Timestamp] = start_date
-        self.end_date: Final[Timestamp] = end_date
+        self.start_timestamp: Final[Timestamp] = start_timestamp
+        self.end_timestamp: Final[Timestamp] = end_timestamp
 
 
-class InvestmentStrategyAnalysis:
-    def __init__(self, timestamp_line: List[Timestamp], capital_line: List[float]):
-        """
-        :param timestamp_line: 日期時間序列資料
-        :param capital_line: 帳戶資本序列資料
-        """
+class InvestmentStrategy:
+    def __init__(
+        self,
+        name: str,
+        base_data_frame: DataFrame,
+        timestamp_column_name: str,  # 日期時間序列資料
+        timestamp_format_code: str,
+        capital_column_name: str,  # 帳戶資本序列資料
+        data_start_datetime: datetime,
+        data_end_datetime: datetime,
+    ):
+        self.name: str = name
+        self.base_data_frame: DataFrame = base_data_frame
+        self.timestamp_column_name: str = timestamp_column_name  # 日期時間序列資料
+        self.timestamp_format_code: str = timestamp_format_code
+        self.capital_column_name: str = capital_column_name  # 帳戶資本序列資料
+        self.data_start_datetime: datetime = data_start_datetime
+        self.data_end_datetime: datetime = data_end_datetime
+
+        # 時間資料過濾
+        timestamp_column: Series = to_datetime(
+            self.base_data_frame[self.timestamp_column_name],
+            format=self.timestamp_format_code,
+        )
+        timestamp_range_filter: Series = (
+            timestamp_column <= self.data_start_datetime
+        ) & (timestamp_column >= self.data_end_datetime)
+        temp_data_frame: DataFrame = self.base_data_frame[timestamp_range_filter]
+
         # 建立 DataFrame
         self._df: DataFrame = DataFrame(
             {
-                ColumnEnum.timestamp: timestamp_line,
-                ColumnEnum.capital: capital_line,
+                ColumnEnum.timestamp: to_datetime(
+                    temp_data_frame[self.timestamp_column_name],
+                    format=self.timestamp_format_code,
+                ),
+                ColumnEnum.capital: temp_data_frame[self.capital_column_name],
             }
         )
         self._df.sort_values(by=ColumnEnum.timestamp, inplace=True)
@@ -51,7 +80,7 @@ class InvestmentStrategyAnalysis:
                 day_earnings_line.append(day_earnings)
         self._df[ColumnEnum.day_earnings] = day_earnings_line
 
-    # 計算年化收益率
+    # 年化收益率
     def annual_return_ratio(self) -> float:
         start_capital: float = self._df.loc[0, ColumnEnum.capital]
         end_capital: float = self._df.loc[len(self._df.index) - 1, ColumnEnum.capital]
@@ -67,7 +96,7 @@ class InvestmentStrategyAnalysis:
         annual: float = pow(total_return + 1, 1 / year_count) - 1
         return annual
 
-    # 計算最大回測
+    # 最大回測
     def max_drawdown(self) -> MaxDrawdownResult:
         # 將數據序列合併成 DataFrame 並按日期排序
         class LocalColumnEnum(StrEnum):
@@ -95,17 +124,17 @@ class InvestmentStrategyAnalysis:
             [LocalColumnEnum.timestamp, LocalColumnEnum.drawdown]
         ]
         max_drawdown: float = temp[LocalColumnEnum.drawdown]
-        end_date: Timestamp = temp[LocalColumnEnum.timestamp]
+        end_timestamp: Timestamp = temp[LocalColumnEnum.timestamp]
 
         # 計算開始時間
-        local_df = local_df[local_df[LocalColumnEnum.timestamp] <= end_date]
-        start_date: Timestamp = local_df.sort_values(
+        local_df = local_df[local_df[LocalColumnEnum.timestamp] <= end_timestamp]
+        start_timestamp: Timestamp = local_df.sort_values(
             by=LocalColumnEnum.capital, ascending=False
         ).iloc[0][LocalColumnEnum.timestamp]
 
-        return MaxDrawdownResult(max_drawdown, start_date, end_date)
+        return MaxDrawdownResult(max_drawdown, start_timestamp, end_timestamp)
 
-    # 計算收益波動率
+    # 收益波動率
     def earnings_volatility_ratio(self) -> float:
         return self._df[ColumnEnum.day_earnings].std() % sqrt(250)
 

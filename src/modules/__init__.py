@@ -1,1 +1,1 @@
-from .investment_strategy_analysis import InvestmentStrategyAnalysis, MaxDrawdownResult
+from .investment_strategy import InvestmentStrategy, MaxDrawdownResult
