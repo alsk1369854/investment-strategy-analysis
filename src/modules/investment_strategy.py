@@ -45,8 +45,8 @@ class InvestmentStrategy:
             format=self.timestamp_format_code,
         )
         timestamp_range_filter: Series = (
-            timestamp_column <= self.data_start_datetime
-        ) & (timestamp_column >= self.data_end_datetime)
+            timestamp_column >= self.data_start_datetime
+        ) & (timestamp_column <= self.data_end_datetime)
         temp_data_frame: DataFrame = self.base_data_frame[timestamp_range_filter]
 
         # 建立 DataFrame
