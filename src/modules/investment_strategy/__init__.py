@@ -1,3 +1,3 @@
-from .investment_strategy import InvestmentStrategy, MaxDrawdownResult
+from ...models.investment_strategy_model import InvestmentStrategy, MaxDrawdownResult
 from .investment_strategy_manager import InvestmentStrategyManager
 from .investment_strategy_chart import InvestmentStrategyChart

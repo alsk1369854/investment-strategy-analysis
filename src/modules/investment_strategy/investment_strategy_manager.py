@@ -1,5 +1,5 @@
 from typing import Dict, List
-from .investment_strategy import InvestmentStrategy
+from ...models.investment_strategy_model import InvestmentStrategy
 
 
 class InvestmentStrategyManager:
