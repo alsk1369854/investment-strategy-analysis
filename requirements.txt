@@ -6,3 +6,4 @@ xlrd
 customtkinter
 tkcalendar
 screeninfo
+matplotlib

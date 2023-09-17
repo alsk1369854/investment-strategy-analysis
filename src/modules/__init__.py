@@ -1,1 +1,3 @@
 from .investment_strategy import InvestmentStrategy, MaxDrawdownResult
+from .investment_strategy_manager import InvestmentStrategyManager
+from .thread_local_manager import thread_local_manager

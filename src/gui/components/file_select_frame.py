@@ -1,6 +1,7 @@
 from customtkinter import CTkFrame, CTkButton, filedialog, CTkLabel, StringVar, EW
 from typing import Any, List, Tuple, Callable, Optional
-from ...utils import FileUtil, ThreaLocalUtil, PandasUtil
+from ...utils import FileUtil, PandasUtil
+from ...modules import thread_local_manager
 from pandas import DataFrame
 
 
@@ -49,7 +50,7 @@ class FileSelectFrame(CTkFrame):
 
         # 更新 thread local
         base_data_frame: DataFrame = PandasUtil.read_file(file_path)
-        ThreaLocalUtil.set_base_data_frame(base_data_frame)
+        thread_local_manager.set_base_data_frame(base_data_frame)
 
         if self._on_selected != None:
             self._on_selected(file_path)

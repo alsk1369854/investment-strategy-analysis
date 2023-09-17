@@ -21,6 +21,17 @@ class MaxDrawdownResult:
 
 
 class InvestmentStrategy:
+    _instance_count: int = 0
+
+    @staticmethod
+    def get_instance_count() -> int:
+        return InvestmentStrategy._instance_count
+
+    @staticmethod
+    def next_instance_number() -> int:
+        InvestmentStrategy._instance_count += 1
+        return InvestmentStrategy._instance_count
+
     def __init__(
         self,
         name: str,
@@ -31,6 +42,7 @@ class InvestmentStrategy:
         data_start_datetime: datetime,
         data_end_datetime: datetime,
     ):
+        self._instance_number: int = InvestmentStrategy.next_instance_number()
         self.name: str = name
         self.base_data_frame: DataFrame = base_data_frame
         self.timestamp_column_name: str = timestamp_column_name  # 日期時間序列資料
@@ -39,6 +51,15 @@ class InvestmentStrategy:
         self.data_start_datetime: datetime = data_start_datetime
         self.data_end_datetime: datetime = data_end_datetime
 
+        # 建立分析資料表
+        self._build_self_df()
+        # 建立緩存
+        self._annual_return_ratio: float | None = None
+        self._max_drawdown: MaxDrawdownResult | None = None
+        self._earnings_volatility_ratio: float | None = None
+        self._sharp_ratio: float | None = None
+
+    def _build_self_df(self):
         # 時間資料過濾
         timestamp_column: Series = to_datetime(
             self.base_data_frame[self.timestamp_column_name],
@@ -50,13 +71,17 @@ class InvestmentStrategy:
         temp_data_frame: DataFrame = self.base_data_frame[timestamp_range_filter]
 
         # 建立 DataFrame
+        self.timestamp_list: List[Timestamp] = list(
+            to_datetime(
+                temp_data_frame[self.timestamp_column_name],
+                format=self.timestamp_format_code,
+            )
+        )
+        self.capital_list: List[float] = list(temp_data_frame[self.capital_column_name])
         self._df: DataFrame = DataFrame(
             {
-                ColumnEnum.timestamp: to_datetime(
-                    temp_data_frame[self.timestamp_column_name],
-                    format=self.timestamp_format_code,
-                ),
-                ColumnEnum.capital: temp_data_frame[self.capital_column_name],
+                ColumnEnum.timestamp: self.timestamp_list,
+                ColumnEnum.capital: self.capital_list,
             }
         )
         self._df.sort_values(by=ColumnEnum.timestamp, inplace=True)
@@ -82,6 +107,9 @@ class InvestmentStrategy:
 
     # 年化收益率
     def annual_return_ratio(self) -> float:
+        if self._annual_return_ratio != None:
+            return self._annual_return_ratio
+
         start_capital: float = self._df.loc[0, ColumnEnum.capital]
         end_capital: float = self._df.loc[len(self._df.index) - 1, ColumnEnum.capital]
         total_return: float = end_capital / start_capital
@@ -93,11 +121,14 @@ class InvestmentStrategy:
             )
         )
         year_count: float = day_count / 365
-        annual: float = pow(total_return + 1, 1 / year_count) - 1
-        return annual
+        self._annual_return_ratio = pow(total_return + 1, 1 / year_count) - 1
+        return self._annual_return_ratio
 
     # 最大回測
     def max_drawdown(self) -> MaxDrawdownResult:
+        if self._max_drawdown != None:
+            return self._max_drawdown
+
         # 將數據序列合併成 DataFrame 並按日期排序
         class LocalColumnEnum(StrEnum):
             timestamp = ColumnEnum.timestamp
@@ -132,16 +163,26 @@ class InvestmentStrategy:
             by=LocalColumnEnum.capital, ascending=False
         ).iloc[0][LocalColumnEnum.timestamp]
 
-        return MaxDrawdownResult(max_drawdown, start_timestamp, end_timestamp)
+        self._max_drawdown = MaxDrawdownResult(
+            max_drawdown, start_timestamp, end_timestamp
+        )
+        return self._max_drawdown
 
     # 收益波動率
     def earnings_volatility_ratio(self) -> float:
-        return self._df[ColumnEnum.day_earnings].std() % sqrt(250)
+        if self._earnings_volatility_ratio != None:
+            return self._earnings_volatility_ratio
+        self._earnings_volatility_ratio = self._df[
+            ColumnEnum.day_earnings
+        ].std() % sqrt(250)
+        return self._earnings_volatility_ratio
 
     # 夏普比率
     def sharp_ratio(self) -> float:
+        if self._sharp_ratio != None:
+            return self._sharp_ratio
         annual_return_ratio: float = self.annual_return_ratio()
         earnings_volatility_ratio: float = self.earnings_volatility_ratio()
         rf: float = 0.0284  # 無風險利率取 10 年期國債的到期年化收益率
-        sharp_ratio: float = (annual_return_ratio - rf) / earnings_volatility_ratio
-        return sharp_ratio
+        self._sharp_ratio = (annual_return_ratio - rf) / earnings_volatility_ratio
+        return self._sharp_ratio

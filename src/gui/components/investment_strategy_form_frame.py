@@ -9,9 +9,13 @@ from customtkinter import (
     NSEW,
     NW,
 )
-from ...modules import InvestmentStrategy
+from ...modules import (
+    InvestmentStrategy,
+    thread_local_manager,
+    InvestmentStrategyManager,
+)
 from .date_picker_top_window import DatePickerTopWindow, DATE_PICKER_FORMAT_CODE
-from ...utils import ThreaLocalUtil
+from ...utils import TkinterUtil
 from datetime import datetime
 import pandas as pd
 
@@ -33,32 +37,26 @@ class InvestmentStrategyFormFrame(CTkFrame):
         self._build_layout()
 
     def refresh(self):
-        for widgets in self.winfo_children():
-            widgets.destroy()
+        def after_self_widgets_destroy():
+            self._create_widgets()
+            self._build_layout()
 
-        self._create_widgets()
-        self._build_layout()
+        TkinterUtil.destroy_frame(self, after_destroy=after_self_widgets_destroy)
 
     def _create_widgets(self):
         # 數據載入
         # base_data_frame
-        base_data_frame: pd.DataFrame = ThreaLocalUtil.get_base_data_frame()
+        base_data_frame: pd.DataFrame = thread_local_manager.get_base_data_frame()
         base_data_frame_column_name_lise: List[str] = list(base_data_frame.columns)
         base_data_frame_column_name_lise_len: int = len(
             base_data_frame_column_name_lise
         )
-        # investement_strategy_dict
-        investment_strategy_dict: Dict[
-            str, InvestmentStrategy
-        ] = ThreaLocalUtil.get_investment_strategy_dict()
-        investment_strategy_dict_len: int = len(investment_strategy_dict)
-
         # 標頭
         self._frame_title: CTkLabel = CTkLabel(self, text="策略分析配置表")
 
         # 策略名稱 輸入
         self._investment_strategy_name: StringVar = StringVar(
-            value=f"{BASICE_INVESTMENT_STRATEGY_NAME}_{investment_strategy_dict_len}"
+            value=f"{BASICE_INVESTMENT_STRATEGY_NAME}_{InvestmentStrategy.get_instance_count() + 1}"
         )
         self._investment_strategy_name_label: CTkLabel = CTkLabel(self, text="策略名稱:")
         self._investment_strategy_name_input: CTkEntry = CTkEntry(
@@ -87,7 +85,7 @@ class InvestmentStrategyFormFrame(CTkFrame):
 
         # 資本列 選擇器
         self._capital_column_name: StringVar = StringVar()
-        self._capital_column_name_label: CTkLabel = CTkLabel(self, text="資產列:")
+        self._capital_column_name_label: CTkLabel = CTkLabel(self, text="資本列:")
         self._capital_column_name_selector: CTkComboBox = CTkComboBox(
             self,
             values=base_data_frame_column_name_lise,
@@ -177,11 +175,11 @@ class InvestmentStrategyFormFrame(CTkFrame):
     def _create_btn_click_handler(self):
         # 數據載入
         # base_data_frame
-        base_data_frame: pd.DataFrame = ThreaLocalUtil.get_base_data_frame()
-        # investement_strategy_dict
-        investment_strategy_dict: Dict[
-            str, InvestmentStrategy
-        ] = ThreaLocalUtil.get_investment_strategy_dict()
+        base_data_frame: pd.DataFrame = thread_local_manager.get_base_data_frame()
+        # investement_strategy_manager
+        investment_strategy_manager: InvestmentStrategyManager = (
+            thread_local_manager.get_investment_strategy_manager()
+        )
 
         # 創建分析數據
         investment_strategy_name: str = self._investment_strategy_name.get()
@@ -205,12 +203,11 @@ class InvestmentStrategyFormFrame(CTkFrame):
             data_start_datetime=data_start_datetime,
             data_end_datetime=data_end_datetime,
         )
-        investment_strategy_dict[investment_strategy_name] = investment_strategy
+        investment_strategy_manager.add(investment_strategy)
 
         # 更新 GUI
-        investment_strategy_dict_len: int = len(investment_strategy_dict)
         self._investment_strategy_name.set(
-            f"{BASICE_INVESTMENT_STRATEGY_NAME}_{investment_strategy_dict_len}"
+            f"{BASICE_INVESTMENT_STRATEGY_NAME}_{InvestmentStrategy.get_instance_count() + 1}"
         )
 
         if self.on_submit != None:

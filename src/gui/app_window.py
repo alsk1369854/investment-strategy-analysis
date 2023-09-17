@@ -1,8 +1,8 @@
 from customtkinter import CTk
 from typing import Tuple
 from .components import FileSelectFrame, InvestmentStrategyFormFrame, MainTabView
-from ..modules import InvestmentStrategy
-from ..utils import ScreenUtil, ThreaLocalUtil
+from ..modules import thread_local_manager, InvestmentStrategy
+from ..utils import ScreenUtil
 
 
 class AppWindow(CTk):
@@ -48,6 +48,6 @@ class AppWindow(CTk):
         self._main_tab_view.refresh_tab_strategy_info()
 
     def _on_file_seleted(self, file_path: str):
-        ThreaLocalUtil.set_investment_strategy_dict({})
+        thread_local_manager.clear_investment_strategy_manager()
         self._investment_strategy_form_frame.refresh()
         self._main_tab_view.refresh()
