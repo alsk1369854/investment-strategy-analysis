@@ -11,7 +11,9 @@ from customtkinter import (
 import pandas as pd
 from tkinter import ttk
 from enum import StrEnum
-from .investment_strategy_info_frame import InvestmentStrategyInfoFrame
+from .investment_strategy_info.investment_strategy_info import (
+    InvestmentStrategyInfoFrame,
+)
 from ....utils import TkinterUtil
 from ....modules import (
     thread_local_manager,
@@ -26,7 +28,7 @@ class TabEnum(StrEnum):
     investment_strategy_chart = "策略圖表"
 
 
-class MainTabView(CTkTabview):
+class MainView(CTkTabview):
     def __init__(self, master: Any):
         super().__init__(master)
 

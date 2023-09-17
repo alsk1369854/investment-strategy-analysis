@@ -5,7 +5,7 @@ from ..modules import thread_local_manager, InvestmentStrategy
 from ..utils import ScreenUtil
 
 
-class AppWindow(CTk):
+class MainWindow(CTk):
     def __init__(self, size: Tuple[int, int]):
         super().__init__()
         self.title("投資策略分析 APP")

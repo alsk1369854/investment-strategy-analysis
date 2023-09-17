@@ -2,13 +2,13 @@ from typing import Any, Callable, Optional, Tuple
 from customtkinter import CTkToplevel
 from tkcalendar import Calendar
 from datetime import datetime
-from .....utils import ScreenUtil
+from ....utils import ScreenUtil
 
 DATE_PATTERN = "YYYY/mm/dd"
 DATE_PICKER_FORMAT_CODE: str = "%Y/%m/%d"
 
 
-class DatePickerTopWindow(CTkToplevel):
+class DatePicker(CTkToplevel):
     def __init__(
         self,
         master: Any,

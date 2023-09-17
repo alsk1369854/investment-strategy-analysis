@@ -20,17 +20,17 @@ class MaxDrawdownResult:
         self.end_timestamp: Final[Timestamp] = end_timestamp
 
 
-class InvestmentStrategy:
+class InvestmentStrategyModel:
     _instance_count: int = 0
 
     @staticmethod
     def get_instance_count() -> int:
-        return InvestmentStrategy._instance_count
+        return InvestmentStrategyModels._instance_count
 
     @staticmethod
     def next_instance_number() -> int:
-        InvestmentStrategy._instance_count += 1
-        return InvestmentStrategy._instance_count
+        InvestmentStrategyModels._instance_count += 1
+        return InvestmentStrategyModels._instance_count
 
     def __init__(
         self,

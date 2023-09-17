@@ -1,13 +1,13 @@
 from typing import Any
 from customtkinter import CTkLabel, CTkFrame, NW
 
-from ....utils import RatioUtil
-from ....modules.investment_strategy import InvestmentStrategy, MaxDrawdownResult
+from .....utils import RatioUtil
+from .....modules.investment_strategy import InvestmentStrategy, MaxDrawdownResult
 import pandas as pd
 from datetime import datetime
 
 
-class InvestmentStrategyInfoFrame(CTkFrame):
+class InvestmentStrategyInfo(CTkFrame):
     def __init__(
         self,
         master: Any,

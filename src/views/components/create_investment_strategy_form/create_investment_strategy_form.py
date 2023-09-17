@@ -9,10 +9,16 @@ from customtkinter import (
     NSEW,
     NW,
 )
-from ...modules.thread_local import thread_local_manager
-from ...modules.investment_strategy import InvestmentStrategy, InvestmentStrategyManager
-from .date_picker_top_window import DatePickerTopWindow, DATE_PICKER_FORMAT_CODE
-from ...utils import TkinterUtil
+from ....modules.thread_local import thread_local_manager
+from ....modules.investment_strategy import (
+    InvestmentStrategy,
+    InvestmentStrategyManager,
+)
+from ...top_windows.date_picker_top_window import (
+    DatePickerTopWindow,
+    DATE_PICKER_FORMAT_CODE,
+)
+from .....utils import TkinterUtil
 from datetime import datetime
 import pandas as pd
 
@@ -21,7 +27,7 @@ DEFAULT_DATE_PICKER_SELECTED_VALUE = "點擊選擇日期"
 BASICE_INVESTMENT_STRATEGY_NAME = "投資策略"
 
 
-class InvestmentStrategyFormFrame(CTkFrame):
+class CreateInvestmentStrategyForm(CTkFrame):
     def __init__(
         self,
         master: Any,

@@ -1,11 +1,11 @@
 from customtkinter import CTkFrame, CTkButton, filedialog, CTkLabel, StringVar, EW
 from typing import Any, List, Tuple, Callable, Optional
-from ...utils import FileUtil, PandasUtil
-from ...modules.thread_local import thread_local_manager
+from .....utils import FileUtil, PandasUtil
+from .....modules.thread_local import thread_local_manager
 from pandas import DataFrame
 
 
-class FileSelectFrame(CTkFrame):
+class FileSelectBar(CTkFrame):
     def __init__(
         self,
         master: Any,
