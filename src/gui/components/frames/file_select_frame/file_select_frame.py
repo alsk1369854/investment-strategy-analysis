@@ -1,7 +1,7 @@
 from customtkinter import CTkFrame, CTkButton, filedialog, CTkLabel, StringVar, EW
 from typing import Any, List, Tuple, Callable, Optional
 from ...utils import FileUtil, PandasUtil
-from ...modules import thread_local_manager
+from ...modules.thread_local import thread_local_manager
 from pandas import DataFrame
 
 

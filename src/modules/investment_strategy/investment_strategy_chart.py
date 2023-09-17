@@ -17,6 +17,10 @@ class InvestmentStrategyChart:
 
         result_chart_list = []
         for timestamp_column_name in timestamp_column_name_set:
+            subplot: (plt.Figure, plt.Axes) = plt.subplots()
+            figure: plt.Figure = subplot[0]
+            axes: plt.Axes = subplot[1]
+
             for investment_strategy in self._investment_strategy_list:
                 if timestamp_column_name != investment_strategy.timestamp_column_name:
                     break
@@ -25,11 +29,11 @@ class InvestmentStrategyChart:
                 axis_x: List[Timestamp] = investment_strategy.timestamp_list
                 axis_y: List[float] = investment_strategy.capital_list
 
-                plt.plot(axis_x, axis_y, label=label_name)
+                axes.plot(axis_x, axis_y, label=label_name)
 
-            plt.xlabel("日期")
-            plt.ylabel("資本")
-            plt.title("資本線")
-            plt.legend()
+            axes.xlabel("日期")
+            axes.ylabel("資本")
+            axes.title("資本線")
+            axes.legend()
             plt.show()
             # axis_y =

@@ -2,8 +2,9 @@ from typing import Any, Callable, Optional, Tuple
 from customtkinter import CTkToplevel
 from tkcalendar import Calendar
 from datetime import datetime
-from ...utils import ScreenUtil
+from .....utils import ScreenUtil
 
+DATE_PATTERN = "YYYY/mm/dd"
 DATE_PICKER_FORMAT_CODE: str = "%Y/%m/%d"
 
 
@@ -25,6 +26,8 @@ class DatePickerTopWindow(CTkToplevel):
 
         self._date_picker: Calendar = Calendar(
             self,
+            selectmode="day",
+            date_pattern=DATE_PATTERN,
             showweeknumbers=False,
             showothermonthdays=False,
         )

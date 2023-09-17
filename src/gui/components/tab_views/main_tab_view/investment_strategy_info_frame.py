@@ -2,7 +2,7 @@ from typing import Any
 from customtkinter import CTkLabel, CTkFrame, NW
 
 from ....utils import RatioUtil
-from ....modules import InvestmentStrategy, MaxDrawdownResult
+from ....modules.investment_strategy import InvestmentStrategy, MaxDrawdownResult
 import pandas as pd
 from datetime import datetime
 

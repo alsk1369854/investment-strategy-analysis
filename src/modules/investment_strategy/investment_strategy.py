@@ -1,5 +1,5 @@
 from typing import List, Final
-from enum import StrEnum, Enum
+from enum import StrEnum
 from pandas import Timestamp, DataFrame, period_range, Series, to_datetime
 from math import sqrt
 from datetime import datetime
@@ -112,7 +112,7 @@ class InvestmentStrategy:
 
         start_capital: float = self._df.loc[0, ColumnEnum.capital]
         end_capital: float = self._df.loc[len(self._df.index) - 1, ColumnEnum.capital]
-        total_return: float = end_capital / start_capital
+        total_return: float = (end_capital / start_capital) - 1
         day_count: int = len(
             period_range(
                 self._df[ColumnEnum.timestamp].iloc[0],
@@ -174,7 +174,7 @@ class InvestmentStrategy:
             return self._earnings_volatility_ratio
         self._earnings_volatility_ratio = self._df[
             ColumnEnum.day_earnings
-        ].std() % sqrt(250)
+        ].std() * sqrt(252)
         return self._earnings_volatility_ratio
 
     # 夏普比率

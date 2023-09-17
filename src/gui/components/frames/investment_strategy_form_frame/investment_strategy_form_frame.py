@@ -9,11 +9,8 @@ from customtkinter import (
     NSEW,
     NW,
 )
-from ...modules import (
-    InvestmentStrategy,
-    thread_local_manager,
-    InvestmentStrategyManager,
-)
+from ...modules.thread_local import thread_local_manager
+from ...modules.investment_strategy import InvestmentStrategy, InvestmentStrategyManager
 from .date_picker_top_window import DatePickerTopWindow, DATE_PICKER_FORMAT_CODE
 from ...utils import TkinterUtil
 from datetime import datetime
