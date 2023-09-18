@@ -1,7 +1,7 @@
 from typing import List, Final, Set
 from matplotlib import pyplot as plt
 from pandas import Timestamp
-from ...models.investment_strategy_model import InvestmentStrategy
+from .investment_strategy_model import InvestmentStrategy
 
 
 class InvestmentStrategyChart:

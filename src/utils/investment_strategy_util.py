@@ -1,14 +1,15 @@
-from typing import List
+from typing import Tuple
 from datetime import datetime
 from pandas import DataFrame, Series, period_range
+from math import sqrt
 
 
 class InvestmentStrategyUtil:
     @staticmethod
     def get_day_earnings_line(
-        _date_line: List[datetime],  # 日期序列
-        _capital_line: List[float],  # 資本序列
-    ) -> List[float]:
+        _date_line: Series[datetime],  # 日期序列
+        _capital_line: Series[float],  # 資本序列
+    ) -> Series[float]:
         # create DataFrame
         date_column_title: str = "date_column_title"
         capital_column_title: str = "capital_column_title"
@@ -21,29 +22,28 @@ class InvestmentStrategyUtil:
         data_frame.sort_values(by=date_column_title, inplace=True)
         data_frame.reset_index(drop=True, inplace=True)
 
-        day_earnings_line: List[float] = []
-        capital_line: Series[float] = data_frame[capital_column_title]
-        capital_line_count: int = capital_line.count()
-        if capital_line_count > 0:
-            day_earnings_line.append(0)
-            for i in range(1, capital_line_count):
-                yesterday_capital: float = capital_line[i - 1]
-                today_capital: float = capital_line[i]
+        # 計算
+        # 昨日資本列
+        prev_capital_column_title: str = "prev_capital_column_title"
+        data_frame[prev_capital_column_title] = data_frame[capital_column_title].shift(
+            1
+        )
 
-                # 日收益率 = (今日資本 - 昨日資本) / 昨日資本
-                day_earnings: float = (
-                    today_capital - yesterday_capital
-                ) / yesterday_capital
+        # 日收益率 = (今日資本 - 昨日資本) / 昨日資本
+        day_earnings_column_title: str = "day_earnings_column_title"
+        data_frame[day_earnings_column_title] = (
+            data_frame[capital_column_title] - data_frame[prev_capital_column_title]
+        ) / data_frame[prev_capital_column_title]
 
-                day_earnings_line.append(day_earnings)
-
+        # 将日收益率列转换为列表并返回
+        day_earnings_line: Series[float] = data_frame[day_earnings_column_title]
         return day_earnings_line
 
     # 獲取年化收益率
     @staticmethod
     def get_annual_return_ratio(
-        _date_line: List[datetime],  # 日期序列
-        _capital_line: List[float],  # 資本序列
+        _date_line: Series[datetime],  # 日期序列
+        _capital_line: Series[float],  # 資本序列
     ) -> float:
         # 創建 DataFrame
         date_column_title: str = "date_column_title"
@@ -77,9 +77,9 @@ class InvestmentStrategyUtil:
     # 最大回測
     @staticmethod
     def max_drawdown(
-        _date_line: List[datetime],  # 日期序列
-        _capital_line: List[float],  # 資本序列
-    ) -> (float, datetime, datetime):  # (最大撤, 開始日期, 結束日期)
+        _date_line: Series[datetime],  # 日期序列
+        _capital_line: Series[float],  # 資本序列
+    ) -> Tuple[float, datetime, datetime]:  # (最大撤, 開始日期, 結束日期)
         # 創建 DataFrame
         date_column_title: str = "date_column_title"
         capital_column_title: str = "capital_column_title"
@@ -110,14 +110,46 @@ class InvestmentStrategyUtil:
         temp: DataFrame = data_frame.sort_values(by=drawdown_column_title).iloc[0][
             [date_column_title, drawdown_column_title]
         ]
-        max_drawdown: float = temp[drawdown_column_title]
-        end_date: datetime = temp[date_column_title]
+        max_drawdown_ratio: float = temp[drawdown_column_title]
+        end_datetime: datetime = temp[date_column_title]
 
         # 計算開始時間
-        data_frame = data_frame[data_frame[date_column_title] <= end_date]
-        start_date: datetime = data_frame.sort_values(
+        data_frame = data_frame[data_frame[date_column_title] <= end_datetime]
+        start_datetime: datetime = data_frame.sort_values(
             by=capital_column_title, ascending=False
         ).iloc[0][date_column_title]
 
         # (最大撤, 開始日期, 結束日期)
-        return (max_drawdown, start_date, end_date)
+        return (max_drawdown_ratio, start_datetime, end_datetime)
+
+    # 收益波動率
+    @staticmethod
+    def get_earnings_volatility_ratio(
+        _date_line: Series[datetime],  # 日期序列
+        _capital_line: Series[float],  # 資本序列
+    ) -> float:
+        day_earnings_line: Series[float] = InvestmentStrategyUtil.get_day_earnings_line(
+            _date_line, _capital_line
+        )
+        # 計算
+        earnings_vaolatility_ratio: float = day_earnings_line.std() * sqrt(252)
+        return earnings_vaolatility_ratio
+
+    # 夏普比率
+    @staticmethod
+    def get_sharp_ratio(
+        _date_line: Series[datetime],  # 日期序列
+        _capital_line: Series[float],  # 資本序列
+    ) -> float:
+        annual_return_ratio: float = InvestmentStrategyUtil.get_annual_return_ratio(
+            _date_line, _capital_line
+        )
+        earnings_volatility_ratio: float = (
+            InvestmentStrategyUtil.get_earnings_volatility_ratio(
+                _date_line, _capital_line
+            )
+        )
+
+        rf: float = 0.0284  # 無風險利率取 10 年期國債的到期年化收益率
+        sharp_ratio: float = (annual_return_ratio - rf) / earnings_volatility_ratio
+        return sharp_ratio

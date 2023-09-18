@@ -1,4 +1,4 @@
-from .views import MainWindow
+from .gui import MainWindow
 
 
 class Main:

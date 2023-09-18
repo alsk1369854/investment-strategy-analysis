@@ -1,1 +1,3 @@
-from .investment_strategy_service import InvestmentStrategyService
+from .services import Services
+
+services = Services.instance
