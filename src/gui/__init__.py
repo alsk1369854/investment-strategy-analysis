@@ -1,1 +1,1 @@
-from .main_window import MainWindow
+from .app import App

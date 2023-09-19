@@ -1,4 +1,4 @@
-from typing import Any, Tuple, Dict
+from typing import Any, Tuple, Dict, List
 from customtkinter import (
     CTkTabview,
     CTkLabel,
@@ -11,15 +11,10 @@ from customtkinter import (
 import pandas as pd
 from tkinter import ttk
 from enum import StrEnum
-from .investment_strategy_info.investment_strategy_info import (
-    InvestmentStrategyInfoFrame,
-)
+from .investment_strategy_info import InvestmentStrategyInfo
 from ....utils import TkinterUtil
-from ....modules import (
-    thread_local_manager,
-    InvestmentStrategy,
-    InvestmentStrategyManager,
-)
+from ....models import InvestmentStrategyModel
+from ....services import services_instance
 
 
 class TabEnum(StrEnum):
@@ -39,6 +34,10 @@ class MainView(CTkTabview):
         # self.label.grid(row=0, column=0, padx=20, pady=10)
 
         self._create_tabs()
+
+    def destroy(self):
+        print("test ___")
+        return super().destroy()
 
     def refresh(self):
         self.refresh_tab_table()
@@ -70,9 +69,7 @@ class MainView(CTkTabview):
 
     def _build_tab_investment_strategy_chart(self):
         # 數據準備
-        investment_strategy_manager: InvestmentStrategyManager = (
-            thread_local_manager.get_investment_strategy_manager()
-        )
+
         # 獲取 tab_table_frame
         tab_investment_strategy_chart: CTkFrame = self.tab(
             TabEnum.investment_strategy_chart
@@ -83,10 +80,9 @@ class MainView(CTkTabview):
         pass
 
     def _build_tab_investment_strategy_info(self):
-        # 數據準備
-        investment_strategy_manager: InvestmentStrategyManager = (
-            thread_local_manager.get_investment_strategy_manager()
-        )
+        investment_strategy_list: List[
+            InvestmentStrategyModel
+        ] = services_instance.investment_strategy_service.get_all()
 
         # 獲取 tab_table_frame
         tab_strategy_info_frame: CTkFrame = self.tab(TabEnum.investment_strategy_info)
@@ -94,8 +90,8 @@ class MainView(CTkTabview):
             tab_strategy_info_frame
         )
         # 投資策略訊息 Frame
-        for investment_strategy in investment_strategy_manager.get_all():
-            investment_strategy_info_frame: CTkFrame = InvestmentStrategyInfoFrame(
+        for investment_strategy in investment_strategy_list:
+            investment_strategy_info_frame: CTkFrame = InvestmentStrategyInfo(
                 strategy_info_frame, investment_strategy
             )
             investment_strategy_info_frame.pack(fill="x", pady=3)
@@ -108,7 +104,9 @@ class MainView(CTkTabview):
         tab_table_frame: CTkFrame = self.tab(TabEnum.table)
 
         # 讀取開啟的資料表
-        base_data_frame: pd.DataFrame = thread_local_manager.get_base_data_frame()
+        base_data_frame: pd.DataFrame = (
+            services_instance.base_data_frame_service.get_data_frame()
+        )
         column_name_tuple: Tuple[str] = tuple(
             column for column in base_data_frame.columns
         )

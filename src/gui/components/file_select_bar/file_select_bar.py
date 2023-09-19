@@ -1,8 +1,7 @@
 from customtkinter import CTkFrame, CTkButton, filedialog, CTkLabel, StringVar, EW
 from typing import Any, List, Tuple, Callable, Optional
-from .....utils import FileUtil, PandasUtil
-from .....modules.thread_local import thread_local_manager
-from pandas import DataFrame
+from ....utils import FileUtil
+from ....services import services_instance
 
 
 class FileSelectBar(CTkFrame):
@@ -48,9 +47,8 @@ class FileSelectBar(CTkFrame):
         # file_name: str = FileUtil.get_file_name(file_path)
         self._select_file_name.set(file_path)
 
-        # 更新 thread local
-        base_data_frame: DataFrame = PandasUtil.read_file(file_path)
-        thread_local_manager.set_base_data_frame(base_data_frame)
+        # 更新 base data frame
+        services_instance.base_data_frame_service.read_file(file_path)
 
         if self._on_selected != None:
             self._on_selected(file_path)

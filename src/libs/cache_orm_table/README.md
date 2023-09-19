@@ -1,5 +1,5 @@
 ## dependence libs
 
 ```bash
-pip install pandas
+pip install pandas==2.1.0
 ```

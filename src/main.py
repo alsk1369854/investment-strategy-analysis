@@ -1,9 +1,9 @@
-from .gui import MainWindow
+from .gui import App
 
 
 class Main:
     def __init__(self):
-        self.main_window: MainWindow = MainWindow(size=(900, 350))
+        self._app: App = App(size=(900, 350))
 
     def start(self):
-        self.main_window.mainloop()
+        self._app.mainloop()

@@ -1,12 +1,16 @@
 from pandas import DataFrame, to_datetime, Series
 from datetime import datetime
 from ..libs.bean_factory import bean
+from ..utils import PandasUtil
 
 
 @bean
 class BaseDataFrameService:
     def __init__(self) -> None:
         self._data_frame: DataFrame = DataFrame()
+
+    def read_file(self, file_path: str) -> DataFrame:
+        self._data_frame = PandasUtil.read_file(file_path)
 
     def get_data_frame(self) -> DataFrame:
         return self._data_frame

@@ -2,7 +2,7 @@ from datetime import datetime
 from ..libs.cache_orm_table import cache_table_model
 
 
-@cache_table_model(primay_key="uid")
+@cache_table_model(primary_key_column="uid")
 class InvestmentStrategyModel:
     uid: str
     name: str

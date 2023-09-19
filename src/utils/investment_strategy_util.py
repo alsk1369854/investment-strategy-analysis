@@ -5,11 +5,12 @@ from math import sqrt
 
 
 class InvestmentStrategyUtil:
+    # 計算資本日收益序列
     @staticmethod
     def get_day_earnings_line(
-        _date_line: Series[datetime],  # 日期序列
-        _capital_line: Series[float],  # 資本序列
-    ) -> Series[float]:
+        _date_line: Series,  # 日期序列 datatime
+        _capital_line: Series,  # 資本序列 float
+    ) -> Series:  # 計算資本日收益序列 float
         # create DataFrame
         date_column_title: str = "date_column_title"
         capital_column_title: str = "capital_column_title"
@@ -36,14 +37,14 @@ class InvestmentStrategyUtil:
         ) / data_frame[prev_capital_column_title]
 
         # 将日收益率列转换为列表并返回
-        day_earnings_line: Series[float] = data_frame[day_earnings_column_title]
+        day_earnings_line: Series = data_frame[day_earnings_column_title]
         return day_earnings_line
 
     # 獲取年化收益率
     @staticmethod
     def get_annual_return_ratio(
-        _date_line: Series[datetime],  # 日期序列
-        _capital_line: Series[float],  # 資本序列
+        _date_line: Series,  # 日期序列 datatime
+        _capital_line: Series,  # 資本序列 float
     ) -> float:
         # 創建 DataFrame
         date_column_title: str = "date_column_title"
@@ -65,8 +66,8 @@ class InvestmentStrategyUtil:
         total_return: float = (end_capital / start_capital) - 1
         day_count: int = len(
             period_range(
-                data_frame[data_frame].iloc[0],
-                data_frame[data_frame].iloc[-1],
+                data_frame[date_column_title].iloc[0],
+                data_frame[date_column_title].iloc[-1],
                 freq="D",
             )
         )
@@ -77,8 +78,8 @@ class InvestmentStrategyUtil:
     # 最大回測
     @staticmethod
     def max_drawdown(
-        _date_line: Series[datetime],  # 日期序列
-        _capital_line: Series[float],  # 資本序列
+        _date_line: Series,  # 日期序列 datatime
+        _capital_line: Series,  # 資本序列 float
     ) -> Tuple[float, datetime, datetime]:  # (最大撤, 開始日期, 結束日期)
         # 創建 DataFrame
         date_column_title: str = "date_column_title"
@@ -119,14 +120,14 @@ class InvestmentStrategyUtil:
             by=capital_column_title, ascending=False
         ).iloc[0][date_column_title]
 
-        # (最大撤, 開始日期, 結束日期)
+        # (最大回撤, 開始日期, 結束日期)
         return (max_drawdown_ratio, start_datetime, end_datetime)
 
     # 收益波動率
     @staticmethod
     def get_earnings_volatility_ratio(
-        _date_line: Series[datetime],  # 日期序列
-        _capital_line: Series[float],  # 資本序列
+        _date_line: Series,  # 日期序列 datatime
+        _capital_line: Series,  # 資本序列 float
     ) -> float:
         day_earnings_line: Series[float] = InvestmentStrategyUtil.get_day_earnings_line(
             _date_line, _capital_line
@@ -138,8 +139,8 @@ class InvestmentStrategyUtil:
     # 夏普比率
     @staticmethod
     def get_sharp_ratio(
-        _date_line: Series[datetime],  # 日期序列
-        _capital_line: Series[float],  # 資本序列
+        _date_line: Series,  # 日期序列 datatime
+        _capital_line: Series,  # 資本序列 float
     ) -> float:
         annual_return_ratio: float = InvestmentStrategyUtil.get_annual_return_ratio(
             _date_line, _capital_line

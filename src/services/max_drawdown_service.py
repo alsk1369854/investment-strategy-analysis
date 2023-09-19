@@ -22,8 +22,8 @@ class MaxDrawdownService:
 
     def create(
         self,
-        date_line: Series[datetime],
-        capital_line: Series[float],
+        date_line: Series,  # 日期序列
+        capital_line: Series,  # 資本序列 float
     ) -> MaxDrawdownModel:
         data_model: MaxDrawdownModel = MaxDrawdownModel()
         data_model.uid = BasicUtil.get_general_uuid()

@@ -1,6 +1,6 @@
 from typing import List
 from datetime import datetime
-from pandas import DataFrame, Series
+from pandas import DataFrame, Series, Timestamp, to_datetime
 from .base_data_frame_service import BaseDataFrameService
 from .max_drawdown_service import MaxDrawdownService
 from ..libs.bean_factory import bean
@@ -22,6 +22,9 @@ class InvestmentStrategyService:
         filter_model: InvestmentStrategyModel = InvestmentStrategyModel()
         filter_model.uid = uid
         self._investment_strategy_dao.delete(filter_model)
+
+    def delete_all(self) -> None:
+        self._investment_strategy_dao.delete()
 
     def create(
         self,

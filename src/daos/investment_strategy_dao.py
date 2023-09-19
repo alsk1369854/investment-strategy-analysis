@@ -20,7 +20,7 @@ class InvestmentStrategyDAO:
 
     def get_list(
         self,
-        filter_model: Optional[InvestmentStrategyModel],
+        filter_model: Optional[InvestmentStrategyModel] = None,
     ) -> List[InvestmentStrategyModel]:
         session: Session = CacheOrmTable.get_session(InvestmentStrategyModel)
 
@@ -32,7 +32,7 @@ class InvestmentStrategyDAO:
 
     def delete(
         self,
-        filter_model: Optional[InvestmentStrategyModel],
+        filter_model: Optional[InvestmentStrategyModel] = None,
     ) -> None:
         session: Session = CacheOrmTable.get_session(InvestmentStrategyModel)
 

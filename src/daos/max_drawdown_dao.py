@@ -20,7 +20,7 @@ class MaxDrawdownDAO:
 
     def get_list(
         self,
-        filter_model: Optional[MaxDrawdownModel],
+        filter_model: Optional[MaxDrawdownModel] = None,
     ) -> List[MaxDrawdownModel]:
         session: Session = CacheOrmTable.get_session(MaxDrawdownModel)
 
@@ -32,7 +32,7 @@ class MaxDrawdownDAO:
 
     def delete(
         self,
-        filter_model: Optional[MaxDrawdownModel],
+        filter_model: Optional[MaxDrawdownModel] = None,
     ) -> None:
         session: Session = CacheOrmTable.get_session(MaxDrawdownModel)
 
