@@ -27,18 +27,14 @@ class App(CTk):
 
     def _create_widgets(self):
         # top
-        self._file_select_bar: FileSelectBar = FileSelectBar(
-            self, on_selected=self._on_file_seleted
-        )
+        self._file_select_bar: FileSelectBar = FileSelectBar(self)
 
         # main
         self._main_tab_view: MainView = MainView(self)
 
         # left side
         self._create_investment_strategy_form_frame: CreateInvestmentStrategyForm = (
-            CreateInvestmentStrategyForm(
-                self, on_submit=self._on_investment_strategy_form_submit
-            )
+            CreateInvestmentStrategyForm(self)
         )
 
     def _build_layout(self):
@@ -50,13 +46,3 @@ class App(CTk):
         )
         # main
         self._main_tab_view.pack(expand=True, fill="both", padx=5, pady=5)
-
-    def _on_investment_strategy_form_submit(
-        self, investment_strategy: InvestmentStrategyModel
-    ):
-        self._main_tab_view.refresh_tab_strategy_info()
-
-    def _on_file_seleted(self, file_path: str):
-        services_instance.investment_strategy_service.delete_all()
-        self._create_investment_strategy_form_frame.refresh()
-        self._main_tab_view.refresh()

@@ -1,4 +1,4 @@
-from typing import Any, Tuple, Dict, List
+from typing import Any, Tuple, List
 from customtkinter import (
     CTkTabview,
     CTkLabel,
@@ -7,11 +7,15 @@ from customtkinter import (
     CTkScrollableFrame,
     END,
 )
-
 import pandas as pd
 from tkinter import ttk
 from enum import StrEnum
 from .investment_strategy_info import InvestmentStrategyInfo
+from ....libs.pubsub import PubSub
+from ..file_select_bar import PUBSUB_KEY_FILE_SELECTED
+from ..create_investment_strategy_form import (
+    PUBSUB_KEY_CREATE_INVESTMENT_STRATEGY_FORM_SUBMIT,
+)
 from ....utils import TkinterUtil
 from ....models import InvestmentStrategyModel
 from ....services import services_instance
@@ -35,8 +39,19 @@ class MainView(CTkTabview):
 
         self._create_tabs()
 
+        PubSub.subscribe(PUBSUB_KEY_FILE_SELECTED, self._on_file_selected)
+        PubSub.subscribe(
+            PUBSUB_KEY_CREATE_INVESTMENT_STRATEGY_FORM_SUBMIT,
+            self._on_create_investment_strategy_form_submit,
+        )
+
     def destroy(self):
-        print("test ___")
+        PubSub.unsubscribe(PUBSUB_KEY_FILE_SELECTED, self._on_file_selected)
+        PubSub.unsubscribe(
+            PUBSUB_KEY_CREATE_INVESTMENT_STRATEGY_FORM_SUBMIT,
+            self._on_create_investment_strategy_form_submit,
+        )
+
         return super().destroy()
 
     def refresh(self):
@@ -137,3 +152,13 @@ class MainView(CTkTabview):
         # layout
         table_scroll_bar.pack(side="right", fill="y")
         table.pack(expand=True, fill="both")
+
+    # pubsub handler
+    def _on_file_selected(self, name: str, file_path: str):
+        self.refresh()
+
+    # pubsub handler
+    def _on_create_investment_strategy_form_submit(
+        self, name: str, investment_strategy: InvestmentStrategyModel
+    ):
+        self.refresh_tab_strategy_info()

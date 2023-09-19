@@ -11,27 +11,34 @@ from customtkinter import (
 )
 from datetime import datetime
 import pandas as pd
-from ....services import services_instance
 from ..date_picker import DATE_PICKER_FORMAT_CODE, DatePicker
+from ....libs.pubsub import PubSub
+from ..file_select_bar import PUBSUB_KEY_FILE_SELECTED
+from ....services import services_instance
 from ....utils import TkinterUtil
 from ....models import InvestmentStrategyModel
 
 
-DEFAULT_DATE_PICKER_SELECTED_VALUE = "點擊選擇日期"
-BASICE_INVESTMENT_STRATEGY_NAME = "投資策略"
+PUBSUB_KEY_CREATE_INVESTMENT_STRATEGY_FORM_SUBMIT = (
+    "PUBSUB_KEY_CREATE_INVESTMENT_STRATEGY_FORM_SUBMIT"
+)
 
 
 class CreateInvestmentStrategyForm(CTkFrame):
-    def __init__(
-        self,
-        master: Any,
-        on_submit: Optional[Callable[[InvestmentStrategyModel], None]] = None,
-    ):
+    DEFAULT_DATE_PICKER_SELECTED_VALUE = "點擊選擇日期"
+    BASICE_INVESTMENT_STRATEGY_NAME = "投資策略"
+
+    def __init__(self, master: Any):
         super().__init__(master)
-        self.on_submit: Optional[Callable[[InvestmentStrategyModel], None]] = on_submit
 
         self._create_widgets()
         self._build_layout()
+
+        PubSub.subscribe(PUBSUB_KEY_FILE_SELECTED, self._on_file_selected)
+
+    def destroy(self):
+        PubSub.unsubscribe(PUBSUB_KEY_FILE_SELECTED, self._on_file_selected)
+        return super().destroy()
 
     def refresh(self):
         def after_self_widgets_destroy():
@@ -55,12 +62,12 @@ class CreateInvestmentStrategyForm(CTkFrame):
 
         # 策略名稱 輸入
         self._investment_strategy_name: StringVar = StringVar(
-            value=BASICE_INVESTMENT_STRATEGY_NAME
+            value=CreateInvestmentStrategyForm.BASICE_INVESTMENT_STRATEGY_NAME
         )
         self._investment_strategy_name_label: CTkLabel = CTkLabel(self, text="策略名稱:")
         self._investment_strategy_name_input: CTkEntry = CTkEntry(
             self,
-            placeholder_text=BASICE_INVESTMENT_STRATEGY_NAME,
+            placeholder_text=CreateInvestmentStrategyForm.BASICE_INVESTMENT_STRATEGY_NAME,
             textvariable=self._investment_strategy_name,
         )
 
@@ -96,7 +103,7 @@ class CreateInvestmentStrategyForm(CTkFrame):
         # 起始時間 日期選擇器
         self._start_date_label: CTkLabel = CTkLabel(self, text="起始時間:")
         self._start_date: StringVar = StringVar(
-            value=DEFAULT_DATE_PICKER_SELECTED_VALUE
+            value=CreateInvestmentStrategyForm.DEFAULT_DATE_PICKER_SELECTED_VALUE
         )
         self._start_date_show_label: CTkLabel = CTkLabel(
             self,
@@ -109,7 +116,9 @@ class CreateInvestmentStrategyForm(CTkFrame):
 
         # 結束時間 日期選擇器
         self._end_date_label: CTkLabel = CTkLabel(self, text="結束時間:")
-        self._end_date: StringVar = StringVar(value=DEFAULT_DATE_PICKER_SELECTED_VALUE)
+        self._end_date: StringVar = StringVar(
+            value=CreateInvestmentStrategyForm.DEFAULT_DATE_PICKER_SELECTED_VALUE
+        )
         self._end_date_show_label: CTkLabel = CTkLabel(
             self,
             text=self._end_date.get(),
@@ -203,10 +212,14 @@ class CreateInvestmentStrategyForm(CTkFrame):
         )
 
         # 更新 GUI
-        self._investment_strategy_name.set(BASICE_INVESTMENT_STRATEGY_NAME)
+        self._investment_strategy_name.set(
+            CreateInvestmentStrategyForm.BASICE_INVESTMENT_STRATEGY_NAME
+        )
 
-        if self.on_submit != None:
-            self.on_submit(investment_strategy)
+        # 發布事件消息
+        PubSub.publish(
+            PUBSUB_KEY_CREATE_INVESTMENT_STRATEGY_FORM_SUBMIT, investment_strategy
+        )
 
     def _start_date_show_label_click_handler(self, event):
         def selected_handler(selected_date: str):
@@ -234,3 +247,6 @@ class CreateInvestmentStrategyForm(CTkFrame):
             )
         else:
             self._end_date_pikcer.focus()
+
+    def _on_file_selected(self, name: str, file_path: str):
+        self.refresh()

@@ -1,1 +1,1 @@
-from .file_select_bar import FileSelectBar
+from .file_select_bar import FileSelectBar, PUBSUB_KEY_FILE_SELECTED

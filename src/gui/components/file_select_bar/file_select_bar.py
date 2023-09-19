@@ -1,17 +1,16 @@
 from customtkinter import CTkFrame, CTkButton, filedialog, CTkLabel, StringVar, EW
 from typing import Any, List, Tuple, Callable, Optional
+from ....libs.pubsub import PubSub
 from ....utils import FileUtil
 from ....services import services_instance
 
 
+PUBSUB_KEY_FILE_SELECTED = "PUBSUB_KEY_FILE_SELECTED"
+
+
 class FileSelectBar(CTkFrame):
-    def __init__(
-        self,
-        master: Any,
-        on_selected: Optional[Callable[[str], None]] = None,
-    ):
+    def __init__(self, master: Any):
         super().__init__(master)
-        self._on_selected: Optional[Callable[[str], None]] = on_selected
 
         # 添加元件
         self._create_widgets()
@@ -47,8 +46,10 @@ class FileSelectBar(CTkFrame):
         # file_name: str = FileUtil.get_file_name(file_path)
         self._select_file_name.set(file_path)
 
-        # 更新 base data frame
+        # 更新 資料表
         services_instance.base_data_frame_service.read_file(file_path)
+        # 清空 舊紀錄
+        services_instance.investment_strategy_service.delete_all()
 
-        if self._on_selected != None:
-            self._on_selected(file_path)
+        # 發布 pubsub 消息
+        PubSub.publish(PUBSUB_KEY_FILE_SELECTED, file_path)
