@@ -3,7 +3,7 @@ from datetime import datetime
 from ..libs.bean_factory import bean
 from ..models import MaxDrawdownModel
 from ..daos import MaxDrawdownDAO
-from ..utils import InvestmentStrategyUtil, BasicUtil
+from ..utils import InvestmentStrategyUtil, UuidUtil
 
 
 @bean
@@ -26,7 +26,7 @@ class MaxDrawdownService:
         capital_line: Series,  # 資本序列 float
     ) -> MaxDrawdownModel:
         data_model: MaxDrawdownModel = MaxDrawdownModel()
-        data_model.uid = BasicUtil.get_general_uuid()
+        data_model.uid = UuidUtil.get_general_uuid()
         (
             max_drawdown_ratio,
             start_datetime,

@@ -6,7 +6,7 @@ from .max_drawdown_service import MaxDrawdownService
 from ..libs.bean_factory import bean
 from ..models import InvestmentStrategyModel, MaxDrawdownModel
 from ..daos import InvestmentStrategyDAO
-from ..utils import InvestmentStrategyUtil, BasicUtil
+from ..utils import InvestmentStrategyUtil, UuidUtil
 
 
 @bean
@@ -36,7 +36,7 @@ class InvestmentStrategyService:
         end_datetime: datetime,
     ) -> InvestmentStrategyModel:
         investment_strategy: InvestmentStrategyModel = InvestmentStrategyModel()
-        investment_strategy.uid = BasicUtil.get_general_uuid()
+        investment_strategy.uid = UuidUtil.get_general_uuid()
         investment_strategy.name = name
         investment_strategy.date_column_title = date_column_title
         investment_strategy.capital_column_title = capital_column_title
