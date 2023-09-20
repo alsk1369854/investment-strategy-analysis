@@ -10,7 +10,7 @@ from customtkinter import (
 import pandas as pd
 from tkinter import ttk
 from enum import StrEnum
-from .investment_strategy_info import InvestmentStrategyInfo
+from .components.investment_strategy_info import InvestmentStrategyInfo
 from ....libs.pubsub import PubSub
 from ..file_select_bar import PUBSUB_KEY_FILE_SELECTED
 from ..create_investment_strategy_form import (
@@ -95,24 +95,14 @@ class MainView(CTkTabview):
         pass
 
     def _build_tab_investment_strategy_info(self):
-        investment_strategy_list: List[
-            InvestmentStrategyModel
-        ] = services_instance.investment_strategy_service.get_all()
-
         # 獲取 tab_table_frame
         tab_strategy_info_frame: CTkFrame = self.tab(TabEnum.investment_strategy_info)
-        strategy_info_frame: CTkScrollableFrame = CTkScrollableFrame(
+
+        # 建立 投資策略 frame
+        investment_info_frame: InvestmentStrategyInfo = InvestmentStrategyInfo(
             tab_strategy_info_frame
         )
-        # 投資策略訊息 Frame
-        for investment_strategy in investment_strategy_list:
-            investment_strategy_info_frame: CTkFrame = InvestmentStrategyInfo(
-                strategy_info_frame, investment_strategy
-            )
-            investment_strategy_info_frame.pack(fill="x", pady=3)
-
-        # layout
-        strategy_info_frame.pack(expand=True, fill="both")
+        investment_info_frame.pack(expand=True, fill="both")
 
     def _build_tab_table(self):
         # 獲取 tab_table_frame

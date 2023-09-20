@@ -1,41 +1,33 @@
 from typing import Any
-from customtkinter import CTkLabel, CTkFrame, NW
-import pandas as pd
+from customtkinter import CTkFrame, CTkLabel, NW
 from datetime import datetime
+from ............models import InvestmentStrategyModel, MaxDrawdownModel
+from ............utils import RatioUtil
+from ............services import services_instance
 
-from .....utils import RatioUtil
-from .....models import InvestmentStrategyModel, MaxDrawdownModel
-from .....services import services_instance
 
-
-class InvestmentStrategyInfo(CTkFrame):
+class Detail(CTkFrame):
     def __init__(
         self,
         master: Any,
         investment_strategy: InvestmentStrategyModel,
     ):
         super().__init__(master)
-        self.investment_strategy: InvestmentStrategyModel = investment_strategy
+        self._investment_strategy: InvestmentStrategyModel = investment_strategy
 
         self._create_widgets()
         self._build_layout()
 
     def _create_widgets(self):
-        # 策略名稱
-        investment_strategy_name: str = self.investment_strategy.name
-        self._investment_strategy_name_label: CTkLabel = CTkLabel(
-            self, text=f"策略名稱: {investment_strategy_name}"
-        )
-
         # 策略資訊
         # 資本列名
-        capital_column_title: str = self.investment_strategy.capital_column_title
+        capital_column_title: str = self._investment_strategy.capital_column_title
         self._capital_column_name_label: CTkLabel = CTkLabel(
             self, text=f"資本列: {capital_column_title}"
         )
         # 數據起始日期與結束日期
-        data_start_datetime: datetime = self.investment_strategy.start_datetime
-        data_end_datetime: datetime = self.investment_strategy.end_datetime
+        data_start_datetime: datetime = self._investment_strategy.start_datetime
+        data_end_datetime: datetime = self._investment_strategy.end_datetime
         self._data_start_datetime_label: CTkLabel = CTkLabel(
             self, text=f"起始日期: {data_start_datetime.date()}"
         )
@@ -44,20 +36,20 @@ class InvestmentStrategyInfo(CTkFrame):
         )
 
         # 年化收益率
-        annual_return_ratio: float = self.investment_strategy.annual_return_ratio
+        annual_return_ratio: float = self._investment_strategy.annual_return_ratio
         self._annual_return_ratio_label: CTkLabel = CTkLabel(
             self, text=f"年化收益率: {RatioUtil.parse_to_percent_str(annual_return_ratio)}"
         )
 
         # 夏普比率
-        sharp_ratio: float = self.investment_strategy.sharp_ratio
+        sharp_ratio: float = self._investment_strategy.sharp_ratio
         self._sharp_ratio_label: CTkLabel = CTkLabel(
             self, text=f"夏普比率: {RatioUtil.parse_to_percent_str(sharp_ratio)}"
         )
 
         # 收益波動率
         earnings_volatility_ratio: float = (
-            self.investment_strategy.earnings_volatility_ratio
+            self._investment_strategy.earnings_volatility_ratio
         )
         self._earnings_volatility_ratio_label: CTkLabel = CTkLabel(
             self,
@@ -65,7 +57,7 @@ class InvestmentStrategyInfo(CTkFrame):
         )
 
         # 最大回測
-        max_drawdown_uid: str = self.investment_strategy.max_drawdown_uid
+        max_drawdown_uid: str = self._investment_strategy.max_drawdown_uid
         max_drawdown: MaxDrawdownModel = (
             services_instance.max_drawdown_service.get_one_by_uid(max_drawdown_uid)
         )
@@ -83,11 +75,6 @@ class InvestmentStrategyInfo(CTkFrame):
         )
 
     def _build_layout(self):
-        # 策略名稱
-        self._investment_strategy_name_label.grid(
-            row=0, column=0, sticky=NW, padx=5, pady=2
-        )
-
         # 資本列名
         self._capital_column_name_label.grid(row=1, column=0, sticky=NW, padx=5, pady=2)
 

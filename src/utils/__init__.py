@@ -6,3 +6,4 @@ from .ratio_util import RatioUtil
 from .tkinter_util import TkinterUtil
 from .uuid_util import UuidUtil
 from .investment_strategy_util import InvestmentStrategyUtil
+from .icon_util import IconUtil
