@@ -1,6 +1,7 @@
 from typing import List
 from datetime import datetime
 from pandas import DataFrame, Series, Timestamp, to_datetime
+from matplotlib import pyplot
 from .base_data_frame_service import BaseDataFrameService
 from .max_drawdown_service import MaxDrawdownService
 from ..libs.bean_factory import bean
@@ -52,6 +53,7 @@ class InvestmentStrategyService:
         )
         date_line: Series[datetime] = base_data_frame[date_column_title]
         capital_line: Series[float] = base_data_frame[capital_column_title]
+        # 獲取年化收益率
         investment_strategy.annual_return_ratio = (
             InvestmentStrategyUtil.get_annual_return_ratio(date_line, capital_line)
         )
@@ -73,3 +75,19 @@ class InvestmentStrategyService:
         self._investment_strategy_dao.create(investment_strategy)
 
         return investment_strategy
+
+    def get_annual_return_ratio_chart(self) -> pyplot.Figure:
+        investment_stragety_list: List[InvestmentStrategyModel] = self.get_all()
+        investment_stragety_list_len: int = len(investment_stragety_list)
+        y_axis: List[str] = [""] * investment_stragety_list_len
+        x_axis: List[int] = [0] * investment_stragety_list_len
+        for i, investment_stragety in enumerate(investment_stragety_list):
+            y_axis[i] = investment_stragety.name
+            x_axis[i] = int(investment_stragety.annual_return_ratio * 100)
+
+        fig, ax = pyplot.subplots()
+        ax.barh(y_axis, x_axis)
+        ax.set_title("年化收益率")
+        ax.set_xlabel("百分比")
+        ax.set_xlabel("策略名稱")
+        return fig
