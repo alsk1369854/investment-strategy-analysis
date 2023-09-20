@@ -1,4 +1,9 @@
 from .gui import App
+import matplotlib
+
+matplotlib.rc(
+    "font", family="serif", serif=["Heiti TC", "Microsoft JhengHei", "MingLiU"]
+)
 
 
 class Main:

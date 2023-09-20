@@ -76,6 +76,7 @@ class InvestmentStrategyService:
 
         return investment_strategy
 
+    # 獲取年化收益率 圖表
     def get_annual_return_ratio_chart(self) -> pyplot.Figure:
         investment_stragety_list: List[InvestmentStrategyModel] = self.get_all()
         investment_stragety_list_len: int = len(investment_stragety_list)
@@ -87,7 +88,7 @@ class InvestmentStrategyService:
 
         fig, ax = pyplot.subplots()
         ax.barh(y_axis, x_axis)
-        ax.set_title("年化收益率")
+        ax.set_title("各策略 年化收益率 柱狀橫條圖")
         ax.set_xlabel("百分比")
-        ax.set_xlabel("策略名稱")
+        ax.set_ylabel("策略名稱")
         return fig

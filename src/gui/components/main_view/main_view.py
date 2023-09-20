@@ -11,13 +11,13 @@ import pandas as pd
 from tkinter import ttk
 from enum import StrEnum
 from .components.investment_strategy_info import InvestmentStrategyInfo
+from .components.investment_strategy_chart import InvestmentStrategyChart
 from ....libs.pubsub import PubSub
 from ..file_select_bar import PUBSUB_KEY_FILE_SELECTED
 from ..create_investment_strategy_form import (
     PUBSUB_KEY_CREATE_INVESTMENT_STRATEGY_FORM_SUBMIT,
 )
 from ....utils import TkinterUtil
-from ....models import InvestmentStrategyModel
 from ....services import services_instance
 
 
@@ -30,12 +30,6 @@ class TabEnum(StrEnum):
 class MainView(CTkTabview):
     def __init__(self, master: Any):
         super().__init__(master)
-
-        # self.add("tab 1")
-
-        # # add widgets on tabs
-        # self.label = CTkLabel(master=self.tab("tab 1"))
-        # self.label.grid(row=0, column=0, padx=20, pady=10)
 
         self._create_tabs()
 
@@ -57,6 +51,7 @@ class MainView(CTkTabview):
     def refresh(self):
         self.refresh_tab_table()
         self.refresh_tab_strategy_info()
+        self.refresh_tab_investment_strategy_chart()
 
     def refresh_tab_strategy_info(self):
         tab_strategy_info_frame: CTkFrame = self.tab(TabEnum.investment_strategy_info)
@@ -70,6 +65,15 @@ class MainView(CTkTabview):
         TkinterUtil.destroy_frame(
             tab_table_frame,
             after_destroy=self._build_tab_table,
+        )
+
+    def refresh_tab_investment_strategy_chart(self):
+        tab_investment_strategy_chart: CTkFrame = self.tab(
+            TabEnum.investment_strategy_chart
+        )
+        TkinterUtil.destroy_frame(
+            tab_investment_strategy_chart,
+            after_destroy=self._build_tab_investment_strategy_chart,
         )
 
     def _create_tabs(self):
@@ -89,10 +93,10 @@ class MainView(CTkTabview):
         tab_investment_strategy_chart: CTkFrame = self.tab(
             TabEnum.investment_strategy_chart
         )
-        strategy_chart_frame: CTkScrollableFrame = CTkScrollableFrame(
+        investment_strategy_chart: InvestmentStrategyChart = InvestmentStrategyChart(
             tab_investment_strategy_chart
         )
-        pass
+        investment_strategy_chart.pack(expand=True, fill="both")
 
     def _build_tab_investment_strategy_info(self):
         # 獲取 tab_table_frame
@@ -144,11 +148,12 @@ class MainView(CTkTabview):
         table.pack(expand=True, fill="both")
 
     # pubsub handler
-    def _on_file_selected(self, name: str, file_path: str):
+    def _on_file_selected(self, name: str, file_path: Any) -> None:
         self.refresh()
 
     # pubsub handler
     def _on_create_investment_strategy_form_submit(
-        self, name: str, investment_strategy: InvestmentStrategyModel
-    ):
+        self, name: str, investment_strategy: Any
+    ) -> None:
         self.refresh_tab_strategy_info()
+        self.refresh_tab_investment_strategy_chart()

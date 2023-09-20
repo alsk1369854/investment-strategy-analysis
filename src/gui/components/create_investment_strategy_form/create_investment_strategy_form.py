@@ -212,9 +212,9 @@ class CreateInvestmentStrategyForm(CTkFrame):
         )
 
         # 更新 GUI
-        self._investment_strategy_name.set(
-            CreateInvestmentStrategyForm.BASICE_INVESTMENT_STRATEGY_NAME
-        )
+        # self._investment_strategy_name.set(
+        #     CreateInvestmentStrategyForm.BASICE_INVESTMENT_STRATEGY_NAME
+        # )
 
         # 發布事件消息
         PubSub.publish(
@@ -248,5 +248,5 @@ class CreateInvestmentStrategyForm(CTkFrame):
         else:
             self._end_date_pikcer.focus()
 
-    def _on_file_selected(self, name: str, file_path: str):
+    def _on_file_selected(self, name: str, file_path: Any) -> None:
         self.refresh()
