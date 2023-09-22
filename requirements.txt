@@ -7,3 +7,4 @@ customtkinter
 tkcalendar
 screeninfo
 matplotlib
+pyinstaller

@@ -1,5 +1,11 @@
 ## InvestmentStrategyAnalysis
 
+### environment
+
+```bash
+python version : 3.11.4
+```
+
 ### venv
 
 #### create
@@ -30,28 +36,9 @@ deactivate
 pip install -r requirements.txt
 ```
 
+### build
 
-
-### Nasdaq_history_data.xlsx
-
-#### columns description
-
-- Price: 收盤價
-
-- Change: 每日漲跌幅
-
-- QLD: 追蹤每日漲跌幅兩倍
-
-- 季線下彎AND收盤在季線下1倍其餘3倍: 投資策略
-
-
-
-#### 需求
-
-- 收益波動率
-
-- 夏普比率
-
-- 年化報酬率
-
-- 最大回測
+```bash
+pyinstaller --name investment_strategy_analysis_app --onefile
+pyinstaller --name myapp --onefile --windowed --icon=icon.ico main.py
+```

@@ -49,7 +49,7 @@ class FileSelectBar(CTkFrame):
         # 更新 資料表
         services_instance.base_data_frame_service.read_file(file_path)
         # 清空 舊紀錄
-        services_instance.investment_strategy_service.delete_all()
+        # services_instance.investment_strategy_service.delete_all()
 
         # 發布 pubsub 消息
         PubSub.publish(PUBSUB_KEY_FILE_SELECTED, file_path)
