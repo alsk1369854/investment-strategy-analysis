@@ -1,44 +1,33 @@
-## InvestmentStrategyAnalysis
+# InvestmentStrategyAnalysis
 
-### environment
+## DEMO
 
-```bash
-python version : 3.11.4
-```
+https://raw.githubusercontent.com/alsk1369854/investment-strategy-analysis/master/docs/demo.mp4
 
-### venv
+<!-- <p align="center">
+    <img height="400px" src="https://raw.githubusercontent.com/alsk1369854/IoTHomeAppliances/master/screenshot/DeviceWorkingVideo.gif"/>
+</p> -->
 
-#### create
+## DEV
 
-```bash
-python3 -m venv .venv
-```
+- python version: 3.11.4
 
-#### start
+## MacOS / Linux
 
 ```bash
-# windows
-.venv\Scripts\activate.bat
-
-# linux
-source .venv/bin/activate
-```
-
-#### close
-
-```bash
-deactivate
-```
-
-### install dependence libs
-
-```bash
+conda create -n isaenv python=3.12
+conda activate isaenv
 pip install -r requirements.txt
 ```
 
-### build
+## Run
 
 ```bash
-pyinstaller --name investment_strategy_analysis_app --onefile
-pyinstaller --name myapp --onefile --windowed --icon=icon.ico main.py
+python main.py
+```
+
+### Build
+
+```bash
+pyinstaller --name app --onefile --windowed main.py
 ```
