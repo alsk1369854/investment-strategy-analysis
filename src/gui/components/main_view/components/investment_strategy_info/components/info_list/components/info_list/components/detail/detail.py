@@ -38,7 +38,8 @@ class Detail(CTkFrame):
         # 年化收益率
         annual_return_ratio: float = self._investment_strategy.annual_return_ratio
         self._annual_return_ratio_label: CTkLabel = CTkLabel(
-            self, text=f"年化收益率: {RatioUtil.parse_to_percent_str(annual_return_ratio)}"
+            self,
+            text=f"年化收益率: {RatioUtil.parse_to_percent_str(annual_return_ratio)}",
         )
 
         # 夏普比率
@@ -56,7 +57,7 @@ class Detail(CTkFrame):
             text=f"收益波動率: {RatioUtil.parse_to_percent_str(earnings_volatility_ratio)}",
         )
 
-        # 最大回測
+        # 最大回撤
         max_drawdown_uid: str = self._investment_strategy.max_drawdown_uid
         max_drawdown: MaxDrawdownModel = (
             services_instance.max_drawdown_service.get_one_by_uid(max_drawdown_uid)
@@ -65,7 +66,7 @@ class Detail(CTkFrame):
         max_drawdown_start_timestamp: datetime = max_drawdown.start_datetime
         max_drawdown_end_timestamp: datetime = max_drawdown.end_datetime
         self._max_drawdown_label: CTkLabel = CTkLabel(
-            self, text=f"最大回測: {RatioUtil.parse_to_percent_str(max_drawdown_ratio)}"
+            self, text=f"最大回撤: {RatioUtil.parse_to_percent_str(max_drawdown_ratio)}"
         )
         self._max_drawdown_start_timestamp_label: CTkLabel = CTkLabel(
             self, text=f"起始時間: {max_drawdown_start_timestamp.date()}"
