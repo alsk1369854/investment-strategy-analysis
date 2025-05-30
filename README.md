@@ -2,11 +2,11 @@
 
 ## DEMO
 
-https://raw.githubusercontent.com/alsk1369854/investment-strategy-analysis/master/docs/demo.mp4
+<video src="https://raw.githubusercontent.com/alsk1369854/investment-strategy-analysis/master/docs/demo.mp4" width="400" autoplay loop muted></video>
 
-<!-- <p align="center">
-    <img height="400px" src="https://raw.githubusercontent.com/alsk1369854/IoTHomeAppliances/master/screenshot/DeviceWorkingVideo.gif"/>
-</p> -->
+<p align="center">
+    <img height="400px" src="https://raw.githubusercontent.com/alsk1369854/investment-strategy-analysis/master/docs/demo.gif"/>
+</p>
 
 ## DEV
 
